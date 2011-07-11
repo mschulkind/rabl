@@ -61,7 +61,14 @@ module Rabl
     # code(:foo) { "bar" }
     # code(:foo, :if => lambda { |m| m.foo.present? }) { "bar" }
     def code(name, options={}, &block)
-      @_result[name] = block.call(@_object) if resolve_condition(options)
+      return unless resolve_condition(options)
+
+      result = block.call(@_object)
+      if name
+        @_result[name] = result
+      else
+        @_result.merge!(result) if result
+      end
     end
     alias_method :node, :code
 
